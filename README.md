@@ -1,31 +1,46 @@
-# Certy Proxy (Cloudflare Workers)
+# Certy Proxy
 
-Proxy entre frontend e backend para mascarar a VPS e aplicar uma camada adicional de segurança.
+Proxy do Certy em Cloudflare Workers.
 
-## O que ele faz
+Este projeto é um componente auxiliar de segurança entre o frontend e o backend, reduzindo exposição direta da VPS.
 
-- Encaminha apenas rotas permitidas:
+## Links
+
+- Site: https://certy.com.br/
+- Repositório: https://github.com/CertyBR/certy.com.br
+- Patrocinador: [ZeroCert](https://zerocert.com.br)
+
+## Mantenedores Chefes
+
+- André Ribas ([@RibasSu](https://github.com/RibasSu))
+- Sarah Maia ([@sarahsec](https://github.com/sarahsec))
+
+## O que o proxy faz
+
+- Encaminha somente rotas permitidas:
   - `/health`
   - `/api/v1/certificates/*`
-- Restringe métodos para `GET`, `POST`, `OPTIONS`.
+- Permite somente métodos `GET`, `POST`, `OPTIONS`.
 - Aplica CORS por allowlist (`ALLOWED_ORIGINS`).
-- Injeta header secreto opcional para o backend:
-  - `X-Certy-Proxy-Token: <PROXY_SHARED_TOKEN>`
+- Encaminha cabeçalhos essenciais para o backend.
+- Injeta token compartilhado opcional (`X-Certy-Proxy-Token`) para bloquear acesso direto ao backend.
+- Força `Cache-Control: no-store` nas respostas proxied.
 
-## Configuração
+## Variáveis
 
-1. Copie variáveis locais:
+Use `.dev.vars` no ambiente local (não versionado):
 
 ```bash
 cp .dev.vars.example .dev.vars
 ```
 
-2. Preencha:
-- `BACKEND_ORIGIN` (URL pública do backend na VPS)
-- `ALLOWED_ORIGINS` (origens do frontend)
-- `PROXY_SHARED_TOKEN` (opcional, mas recomendado)
+Campos:
 
-## Rodar local
+- `BACKEND_ORIGIN`: origem do backend (ex.: `http://127.0.0.1:8080` em dev)
+- `ALLOWED_ORIGINS`: origens permitidas do frontend (separadas por vírgula)
+- `PROXY_SHARED_TOKEN`: token opcional (recomendado)
+
+## Desenvolvimento
 
 ```bash
 bun install
@@ -40,12 +55,28 @@ bunx wrangler secret put PROXY_SHARED_TOKEN
 bun run deploy
 ```
 
+## Scripts
+
+```bash
+bun run dev     # wrangler dev
+bun run check   # tsc --noEmit
+bun run deploy  # wrangler deploy
+```
+
 ## Integração com backend
 
-No backend, configure o mesmo token:
+Defina o mesmo token no backend:
 
 ```env
 PROXY_SHARED_TOKEN=<mesmo token do worker>
 ```
 
-Sem `PROXY_SHARED_TOKEN` no backend, o acesso direto continua liberado.
+Se o backend estiver sem token, acesso direto continua possível.
+
+## Contribuições
+
+Guia rápido em [CONTRIBUTING.md](./CONTRIBUTING.md).
+
+## Licença
+
+MIT. Veja [LICENSE](./LICENSE).
