@@ -1,4 +1,4 @@
-name = "certy-proxy"
+name = "proxy"
 main = "src/index.ts"
 compatibility_date = "2026-02-25"
 workers_dev = true
