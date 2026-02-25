@@ -1,0 +1,8 @@
+name = "certy-proxy"
+main = "src/index.ts"
+compatibility_date = "2026-02-25"
+workers_dev = true
+
+[vars]
+BACKEND_ORIGIN = "https://backend.certy.com.br"
+ALLOWED_ORIGINS = "https://certy.com.br,https://www.certy.com.br"
