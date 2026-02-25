@@ -15,7 +15,7 @@ export default {
     }
 
     const origin = request.headers.get("Origin");
-    const corsOrigin = resolveCorsOrigin(origin, env.ALLOWED_ORIGINS);
+    const corsOrigin = resolveCorsOrigin(origin, env.ALLOWED_ORIGINS, requestUrl);
 
     if (request.method === "OPTIONS") {
       return handlePreflight(request, corsOrigin);
@@ -67,8 +67,17 @@ function normalizeBackendOrigin(value: string | undefined): string | null {
   }
 }
 
-function resolveCorsOrigin(origin: string | null, allowedOriginsRaw?: string): string | null {
+function resolveCorsOrigin(
+  origin: string | null,
+  allowedOriginsRaw: string | undefined,
+  requestUrl: URL
+): string | null {
   if (!origin) return null;
+
+  // In local dev (wrangler dev + vite dev), allow localhost origins automatically.
+  if (isLocalDevRequest(origin, requestUrl)) {
+    return origin;
+  }
 
   const allowedOrigins = (allowedOriginsRaw ?? "")
     .split(",")
@@ -78,6 +87,21 @@ function resolveCorsOrigin(origin: string | null, allowedOriginsRaw?: string): s
   if (allowedOrigins.includes("*")) return origin;
   if (allowedOrigins.includes(origin)) return origin;
   return null;
+}
+
+function isLocalDevRequest(origin: string, requestUrl: URL): boolean {
+  try {
+    const originUrl = new URL(origin);
+    const isLocalOrigin = isLocalHostname(originUrl.hostname);
+    const isLocalProxy = isLocalHostname(requestUrl.hostname);
+    return isLocalOrigin && isLocalProxy;
+  } catch {
+    return false;
+  }
+}
+
+function isLocalHostname(hostname: string): boolean {
+  return hostname === "localhost" || hostname === "127.0.0.1";
 }
 
 function handlePreflight(request: Request, corsOrigin: string | null): Response {
