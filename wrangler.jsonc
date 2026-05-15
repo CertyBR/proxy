@@ -1,0 +1,23 @@
+{
+  "name": "certy-proxy",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-02-25",
+  "workers_dev": true,
+
+  "observability": {
+    "logs": {
+      "enabled": true,
+      "invocation_logs": true,
+    },
+    "traces": {
+      "enabled": true,
+    },
+  },
+
+  "vars": {
+    "ALLOWED_ORIGINS": "https://certy.com.br,https://www.certy.com.br",
+  },
+  "secrets": {
+    "required": ["BACKEND_ORIGIN", "PROXY_SHARED_TOKEN"],
+  },
+}
