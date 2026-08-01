@@ -4,7 +4,7 @@
     "lib": ["ES2022", "WebWorker"],
     "module": "ES2022",
     "moduleResolution": "Bundler",
-    "types": ["@cloudflare/workers-types"],
+    "types": ["@cloudflare/workers-types", "vitest/globals"],
     "strict": true,
     "noEmit": true,
     "skipLibCheck": true
